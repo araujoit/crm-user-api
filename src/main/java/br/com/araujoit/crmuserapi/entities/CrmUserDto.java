@@ -37,5 +37,5 @@ public class CrmUserDto implements Serializable {
 
 	@NotBlank(message = "Senha é obrigatória")
 	@Size(min = 3, max = 100)
-	private String password;
+	private transient String password;
 }

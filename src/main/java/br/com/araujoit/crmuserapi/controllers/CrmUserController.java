@@ -1,12 +1,15 @@
 package br.com.araujoit.crmuserapi.controllers;
 
 import javax.validation.Valid;
+import javax.validation.constraints.Min;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PatchMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -43,8 +46,15 @@ public class CrmUserController {
 
 	@GetMapping(value = "/list")
 	public Page<CrmUser> findAll(
-			@RequestParam(name = "page", defaultValue = "0") Integer page, 
-			@RequestParam(name = "size", defaultValue = "10") Integer size) {
-		return userService.findAll(page, size);
+			@RequestParam(name = "page", defaultValue = "0") Integer page,
+			@RequestParam(name = "size", defaultValue = "10") Integer size,
+			@RequestParam(name = "sortBy", defaultValue = "id") String sortBy,
+			@RequestParam(name = "sortOrder", defaultValue = "ASC") String sortOrder) {
+		return userService.findAll(page, size, sortBy, sortOrder);
+	}
+
+	@PatchMapping(value = "/{id}")
+	public void updateUser(@Valid @Min(1) @PathVariable(name = "id") Long id, @Valid @RequestBody CrmUserDto userDto) {
+		userService.updateUser(id, userDto);
 	}
 }

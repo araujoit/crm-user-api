@@ -2,10 +2,11 @@ package br.com.araujoit.crmuserapi.services;
 
 import java.util.Optional;
 
+import javax.validation.Valid;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
-import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
@@ -56,8 +57,20 @@ public class CrmUserService {
 				.build();
 	}
 
-	public Page<CrmUser> findAll(Integer page, Integer size) {
-		Pageable sortedById = PageRequest.of(page, size, Sort.by("id").ascending());
-		return userRepository.findAll(sortedById);
+	public Page<CrmUser> findAll(Integer page, Integer size, String sortBy, String sortOrder) {
+		Sort sort = Sort.by(sortBy).ascending();
+		if ("DESC".equalsIgnoreCase(sortOrder)) {
+			sort = Sort.by(sortBy).descending();
+		}
+
+		return userRepository.findAll(PageRequest.of(page, size, sort));
+	}
+
+	public void updateUser(@Valid Long id, @Valid CrmUserDto userDto) {
+		userRepository.findById(id).ifPresent(user -> {
+			userDto.setId(id);
+			CrmUser userUpdated = build(userDto);
+			userRepository.save(userUpdated);
+		});
 	}
 }
